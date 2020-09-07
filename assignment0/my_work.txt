@@ -1,0 +1,44 @@
+push.lua
+- Changed to version 0.4 to work with current version of Love2D
+
+Two versions of main
+- First one (Not used) had AI set up to follow the center of the ball.
+I saved as a back up with the current version allowing the AI settings to be changed.
+Now thier is a chance of the AI controlled paddle not to react and move on the y axis
+
+############################################################################################
+Paddle.lua
+
+
+
+
+Line 36
+- added cord of the middle of the Paddle.
+
+############################################################################################
+main.lua
+
+Line 87
+- added a mid size font for AI Settings display text
+
+Line 117 - 132
+- added vars for ai settings including which players and difficulty level
+
+Line 273 - 314
+- Changed up PAddle movement logic
+-- allows move for players if not set ot AI
+-- AI paddle movement based on AI level
+
+Line 342 - 347
+- added control to set ai players and ai difficulty level
+
+Line 395 - 406
+- added ai settings gui text
+
+Line 425 - 436
+- same text added for gamestate 'done'
+
+Line 455 - 468
+- added functions for AI player change and AI level change
+
+
