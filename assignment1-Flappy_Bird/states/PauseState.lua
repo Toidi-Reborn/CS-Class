@@ -38,8 +38,6 @@ function PauseState:update(dt)
 end
 
 function PauseState:render()
-
-
     -- simply render the score to the middle of the screen
     love.graphics.setFont(flappyFont)
     love.graphics.printf('Oof! You lost!', 0, 64, VIRTUAL_WIDTH, 'center')

@@ -1,13 +1,7 @@
-push.lua
-- Changed to version 0.4 to work with current version of Love2D
 
-Two versions of main
-- First one (Not used) had AI set up to follow the center of the ball.
-I saved as a back up with the current version allowing the AI settings to be changed.
-Now thier is a chance of the AI controlled paddle not to react and move on the y axis
 
-############################################################################################
-Paddle.lua
+
+
 
 
 

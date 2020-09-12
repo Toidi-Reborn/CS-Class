@@ -136,14 +136,19 @@ function love.keypressed(key)
 
     if key == 'escape' then
         love.event.quit()
+
     --ADDED
     elseif key == 'p' and gameStarted then
         if paused == false then
             scrolling = false
             paused = true
+            sounds['music']:pause()
+
         else
             scrolling = true
             paused = false
+            sounds['music']:resume()
+
         end
     end
 end

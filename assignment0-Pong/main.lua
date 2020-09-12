@@ -292,9 +292,9 @@ function love.update(dt)
     -- player 2 
 
     if aiPlayers ~= 2 and aiPlayers ~= 3 then 
-        if love.keyboard.isDown('w') then
+        if love.keyboard.isDown('up') then
             player2.dy = -PADDLE_SPEED
-        elseif love.keyboard.isDown('s') then
+        elseif love.keyboard.isDown('down') then
             player2.dy = PADDLE_SPEED
         else
             player2.dy = 0

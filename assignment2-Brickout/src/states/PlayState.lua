@@ -391,8 +391,8 @@ function PlayState:render()
 
     --ADDED - to see what the brickCount is for paddle change during testing
     --love.graphics.print(self.paddle.brickCountChange, 25, 55)
-    love.graphics.print(self.levelScore, 25, 75)
-   -- love.graphics.print(self.totalBrickCount, 25, 105)
+    --love.graphics.print(self.levelScore, 25, 75)
+    -- love.graphics.print(self.totalBrickCount, 25, 105)
 
 
 
