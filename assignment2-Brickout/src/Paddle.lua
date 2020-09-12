@@ -40,6 +40,16 @@ function Paddle:init(skin)
     -- the variant is which of the four paddle sizes we currently are; 2
     -- is the starting size, as the smallest is too tough to start with
     self.size = 2
+
+    --ADDED - count how many bricks paddle has hit
+    self.brickCount = 0
+    self.brickCountChange = math.random(3, 10)
+
+    --ADDED - key brick
+    self.hasKey = false
+    self.levelNeedsKey = false
+
+    
 end
 
 function Paddle:update(dt)
@@ -74,4 +84,24 @@ end
 function Paddle:render()
     love.graphics.draw(gTextures['main'], gFrames['paddles'][self.size + 4 * (self.skin - 1)],
         self.x, self.y)
+
+
+end
+
+
+--ADDED
+
+function Paddle:changeSize(adj)
+    self.adjust = adj
+
+    if self.adjust == "up" and self.size < 4 then
+        self.size = self.size + 1
+    end
+
+    if self.adjust == "down" and self.size > 1 then
+        self.size = self.size - 1
+    end
+
+    self.width = self.size * 32 -- account for paddle size change to re-center the ball with different paddle sizes on serve
+
 end

@@ -32,6 +32,10 @@ LevelMaker = Class{}
 ]]
 function LevelMaker.createMap(level)
     local bricks = {}
+    
+    --ADDED
+    local keyFlag = math.random(4, 30)
+    local brickCount = 0
 
     -- randomly choose the number of rows
     local numRows = math.random(1, 5)
@@ -95,25 +99,35 @@ function LevelMaker.createMap(level)
                 y * 16                  -- just use y * 16, since we need top padding anyway
             )
 
-            -- if we're alternating, figure out which color/tier we're on
-            if alternatePattern and alternateFlag then
+            --ADDED
+            if brickCount == keyFlag then
+                b.isKeyBrick = true
+                b.color = 2
+                        
+            -- if we're alternating, figure out which color/tier we're on  +++++++++++++   changed if to else
+            elseif alternatePattern and alternateFlag then
                 b.color = alternateColor1
                 b.tier = alternateTier1
                 alternateFlag = not alternateFlag
-            else
+            elseif alternateFlag then
                 b.color = alternateColor2
                 b.tier = alternateTier2
                 alternateFlag = not alternateFlag
+            else
+                b.color = solidColor
+                b.tier = solidTier
             end
 
+            
             -- if not alternating and we made it here, use the solid color/tier
+            --[[ remove me
             if not alternatePattern then
                 b.color = solidColor
                 b.tier = solidTier
             end 
-
+]]
             table.insert(bricks, b)
-
+            brickCount = brickCount + 1
             -- Lua's version of the 'continue' statement
             ::continue::
         end

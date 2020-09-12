@@ -68,7 +68,13 @@ function love.load()
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
         ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
         --ADDED
-        ['power'] = GenerateQuadsPowerUp(gTextures['main'])
+        ['power'] = GenerateQuadsPowerUp(gTextures['main']),
+
+        ['keyBricks'] = GenerateKeyBricks(gTextures['main'])
+
+
+
+
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -207,7 +213,7 @@ function love.draw()
     
         --ADDED
         --[[  Just to see the quads / used to test, leaving for referance 
-        --Draw > from sheet > from Quad > this position, size, size, rotate, scale, scale
+        --Draw > from sheet > from Quad > this position, x, y, rotate, scale, scale
         love.graphics.draw(gTextures['main'], gFrames['power'][1], 20, 20, 0, 2, 2)
         
         love.graphics.draw(gTextures['main'], gFrames['power'][2], 20, 40, 0, 2, 2)
@@ -221,7 +227,14 @@ function love.draw()
         love.graphics.draw(gTextures['main'], gFrames['power'][8], 20, 160, 0, 2, 2)
         love.graphics.draw(gTextures['main'], gFrames['power'][9], 20, 180, 0, 2, 2)
         love.graphics.draw(gTextures['main'], gFrames['power'][10], 20, 200, 0, 2, 2)
-        ]]
+ 
+
+        love.graphics.draw(gTextures['main'], gFrames['keyBricks'][1], 20, 180, 0, 1, 1)
+        love.graphics.draw(gTextures['main'], gFrames['keyBricks'][2], 20, 200, 0, 1, 1)
+        
+       ]]
+
+
 
     -- use the state machine to defer rendering to the current state we're in
     gStateMachine:render()
@@ -311,6 +324,9 @@ function displayFPS()
     love.graphics.setFont(gFonts['small'])
     love.graphics.setColor(0, 255, 0, 255)
     love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 5, 5)
+    
+
+
 end
 
 --[[
@@ -322,3 +338,4 @@ function renderScore(score)
     love.graphics.print('Score:', VIRTUAL_WIDTH - 60, 5)
     love.graphics.printf(tostring(score), VIRTUAL_WIDTH - 50, 5, 40, 'right')
 end
+

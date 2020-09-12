@@ -1,12 +1,15 @@
 PowerUp = Class{}
 
-function PowerUp:init(skin)
+function PowerUp:init(power)
     --ADDED
     self.width = 16
     self.height = 16
-    self.skin = skin
+    --self.skin = skin
     self.inPlay = false
     self.trigger = 0
+    self.powerUsed = false
+
+    self.power = power
 
     self.x = math.random((VIRTUAL_WIDTH * 0.15), (VIRTUAL_WIDTH * 0.85))
     self.y = 10
@@ -28,9 +31,10 @@ end
 
 function PowerUp:reset()
     self.x = 0
-    self.y = 50
+    self.y = -50
     self.dx = 0
-    self.dy = 70
+    self.dy = 0
+    self.powerUsed = false
 end
 
 function PowerUp:update(dt)
@@ -43,5 +47,13 @@ function PowerUp:update(dt)
 end
 
 function PowerUp:render()
-    love.graphics.draw(gTextures['main'], gFrames['power'][7], self.x, self.y, 0)
+
+    if self.power == "key" then
+        love.graphics.draw(gTextures['main'], gFrames['power'][10], self.x, self.y, 0)
+
+    elseif self.power == "balls" then
+        love.graphics.draw(gTextures['main'], gFrames['power'][7], self.x, self.y, 0)
+    end
+
+
 end

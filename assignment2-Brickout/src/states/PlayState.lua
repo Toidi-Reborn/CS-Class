@@ -26,43 +26,23 @@ function PlayState:enter(params)
     self.health = params.health
     self.score = params.score
     self.highScores = params.highScores
-    --self.ballSet[thisBall] = params.ball
-    --self.ballSet[thisBall]2 = params.ball2
-    --self.ballSet[thisBall]3 = params.ball3
     self.level = params.level
 
-    self.recoverPoints = 5000
+    self.recoverPoints = 500000 --was 5000
 
+    --ADDED
     self.ballSet = params.ballSet
-
-
-    --[[ give ball random starting velocity
-    self.ballSet[thisBall].dx = math.random(-200, 200)
-    self.ballSet[thisBall].dy = math.random(-50, -60)
-    self.ballSet[thisBall]2.dx = math.random(-200, 200)
-    self.ballSet[thisBall]2.dy = math.random(-50, -60)
-    self.ballSet[thisBall]3.dx = math.random(-200, 200)
-    self.ballSet[thisBall]3.dy = math.random(-50, -60)
-
-
-    .ballSet[thisBall] = {}
-
-    .ballSet[thisBall][0] = self.ballSet[thisBall]
-    .ballSet[thisBall][1] = self.ballSet[thisBall]2
-
-
-    ]]
     
-    self.powerUp = PowerUp()
+    --self.paddle.hasKey = false
+    self.keyPowerUp = PowerUp("key")
+    self.ballsPowerUp = PowerUp("balls")
+
+    self.levelScore = 0
 
     for thisBall in pairs(self.ballSet) do   
         self.ballSet[thisBall].dx = math.random(-200, 200)
         self.ballSet[thisBall].dy = math.random(-50, -60)
     end
-
-
-
-
 end
 
 function PlayState:update(dt)
@@ -84,28 +64,50 @@ function PlayState:update(dt)
 
     
     for thisBall in pairs(self.ballSet) do
-        self.ballSet[thisBall]:update(dt)
+        if self.ballSet[thisBall].inPlay then
+            self.ballSet[thisBall]:update(dt)
+        end    
     end
-
-    --self.ballSet[thisBall]:update(dt)
-    --self.ballSet[thisBall]2:update(dt)
 
 
     --ADDED
-    if self.powerUp.inPlay then
-        self.powerUp:update(dt)
+    if self.keyPowerUp.inPlay then
+        self.keyPowerUp:update(dt)
+
+        if self.keyPowerUp:collides(self.paddle) then
+            gSounds['select']:play()
+            self.powerUsed = true
+            self.paddle.hasKey = true
+            self.keyPowerUp:reset()
+        end
+
     end
 
-    if self.powerUp:collides(self.paddle) then
-        self.powerUp:reset()
-        gSounds['select']:play()
+
+    if self.ballsPowerUp.inPlay then
+        self.ballsPowerUp:update(dt)
+
+        if self.ballsPowerUp:collides(self.paddle) then
+            self.powerUsed = true
+            self.ballSet[1].dx = math.random(-200, 200)
+            self.ballSet[1].dy = math.random(-50, -60)
+            self.ballSet[2].dx = math.random(-200, 200)
+            self.ballSet[2].dy = math.random(-50, -60)
+
+            self.ballSet[1].inPlay = true
+            self.ballSet[2].inPlay = true
+
+            self.ballsPowerUp:reset()
+        end
+
     end
+
 
     
     --ADDED
     for thisBall in pairs(self.ballSet) do
 
-        if self.ballSet[thisBall]:collides(self.paddle) then
+        if self.ballSet[thisBall].inPlay and self.ballSet[thisBall]:collides(self.paddle) then
             -- raise ball above paddle in case it goes below it, then reverse dy
             self.ballSet[thisBall].y = self.paddle.y - 8
             self.ballSet[thisBall].dy = -self.ballSet[thisBall].dy
@@ -126,8 +128,6 @@ function PlayState:update(dt)
             gSounds['paddle-hit']:play()
         end
     
-   
-
 
 
         -- detect collision across all bricks with the ball
@@ -136,40 +136,76 @@ function PlayState:update(dt)
             -- only check collision if we're in play
             if brick.inPlay and self.ballSet[thisBall]:collides(brick) then
 
-                -- add to score
-                self.score = self.score + (brick.tier * 200 + brick.color * 25)
+                if brick.isKeyBrick and not self.paddle.hasKey then
 
-                -- trigger the brick's hit function, which removes it from play
-                brick:hit()
+                    --Do nothing
+                    --dont need to be its own but easier to read for me
 
-                -- if we have enough points, recover a point of health
-                if self.score > self.recoverPoints then
-                    -- can't go above 3 health
-                    self.health = math.min(3, self.health + 1)
+                else
+                    self.paddle.brickCount = self.paddle.brickCount + 1
+                    -- add to score
+                    self.score = self.score + (brick.tier * 200 + brick.color * 25)
+                    self.levelScore = self.levelScore + (brick.tier * 200 + brick.color * 25)
 
-                    -- multiply recover points by 2
-                    self.recoverPoints = math.min(100000, self.recoverPoints * 2)
+        
+                    --ADDED - larger paddle when x number of bricks are hit
+                    if self.paddle.brickCount == self.paddle.brickCountChange then
+                        self.paddle:changeSize("up")
+                        self.paddle.brickCountChange = math.random(3, 10)
+                        self.paddle.brickCount = 0
+                    end
 
-                    -- play recover sound effect
-                    gSounds['recover']:play()
+
+                    if not self.ballsPowerUp.powerUsed and self.levelScore >= 500 then
+                        self.ballsPowerUp.inPlay = true
+                        self.ballsPowerUp.powerUsed = true
+                    end
+
+                    if not self.keyPowerUp.powerUsed and self.levelScore >= 1000 then
+                        self.keyPowerUp.inPlay = true
+                        self.keyPowerUp.powerUsed = true
+                    end
+
+
+
+
+                    -- trigger the brick's hit function, which removes it from play
+
+                    brick:hit()
+
+                    -- if we have enough points, recover a point of health
+                    if self.score > self.recoverPoints then
+                        -- can't go above 3 health
+                        self.health = math.min(3, self.health + 1)
+
+                        -- multiply recover points by 2
+                        self.recoverPoints = math.min(100000, self.recoverPoints * 2) ---truned up for testing without it
+
+                        -- play recover sound effect
+                        gSounds['recover']:play()
+                    end
+
+                    -- go to our victory screen if there are no more bricks left
+                    if self:checkVictory() then
+                        gSounds['victory']:play()
+
+                        gStateMachine:change('victory', {
+                            level = self.level,
+                            paddle = self.paddle,
+                            health = self.health,
+                            score = self.score,
+                            highScores = self.highScores,
+                            ball = self.ballSet[thisBall],
+                            recoverPoints = self.recoverPoints
+                        })
+                    end
+
+
+
                 end
 
-                -- go to our victory screen if there are no more bricks left
-                if self:checkVictory() then
-                    gSounds['victory']:play()
 
-                    gStateMachine:change('victory', {
-                        level = self.level,
-                        paddle = self.paddle,
-                        health = self.health,
-                        score = self.score,
-                        highScores = self.highScores,
-                        ball = self.ballSet[thisBall],
-                        recoverPoints = self.recoverPoints
-                    })
-                end
-
-                --
+                    --
                 -- collision code for bricks
                 --
                 -- we check to see if the opposite side of our velocity is outside of the brick;
@@ -216,11 +252,26 @@ function PlayState:update(dt)
 
                 -- only allow colliding with one brick, for corners
                 break
+
+
+
+
+
+                
             end
         end
 
         -- if ball goes below bounds, revert to serve state and decrease health
+        
+        --CHANGE - set play to false when goes off screen
         if self.ballSet[thisBall].y >= VIRTUAL_HEIGHT then
+            self.ballSet[thisBall].inPlay = false
+        end
+
+        --[[       
+            REMOVED - reused to test for more than just the main ball and placed outside a for loop
+
+            Moved to be after the for loop
             self.health = self.health - 1
             gSounds['hurt']:play()
 
@@ -241,6 +292,7 @@ function PlayState:update(dt)
                 })
             end
         end
+        ]]
 
         -- for rendering particle systems
         for k, brick in pairs(self.bricks) do
@@ -252,20 +304,53 @@ function PlayState:update(dt)
         end
 
         if love.keyboard.wasPressed('t') then
-            self.powerUp.inPlay = true
-        end
+            local x = math.random(2)
 
+            if x == 1 then
+                self.keyPowerUp.inPlay = true
+            elseif x == 2 then
+                self.ballsPowerUp.inPlay = true
+            end
+        end
     end
 
+    --ADDED - taken out of for loop to check all balls
+    if self.ballSet[0].inPlay == false and self.ballSet[1].inPlay == false and self.ballSet[2].inPlay == false and self.ballSet[3].inPlay == false then            
+        self.health = self.health - 1
+        gSounds['hurt']:play()
+        self.levelScore = 0
 
+        if self.health == 0 then
+            gStateMachine:change('game-over', {
+                score = self.score,
+                highScores = self.highScores
+            })
+
+        else
+            self.paddle:changeSize("down")
+            gStateMachine:change('serve', {
+                paddle = self.paddle,
+                bricks = self.bricks,
+                health = self.health,
+                score = self.score,
+                highScores = self.highScores,
+                level = self.level,
+                recoverPoints = self.recoverPoints
+            })
+        end
+    end
 end
 
 
 
 function PlayState:render()
     --ADDED
-    if self.powerUp.inPlay then
-        self.powerUp:render()
+    if self.keyPowerUp.inPlay then
+        self.keyPowerUp:render()
+    end
+
+    if self.ballsPowerUp.inPlay then
+        self.ballsPowerUp:render()
     end
 
 
@@ -273,16 +358,24 @@ function PlayState:render()
     for k, brick in pairs(self.bricks) do
         brick:render()
     end
-
     -- render all particle systems
     for k, brick in pairs(self.bricks) do
         brick:renderParticles()
     end
 
+    --ADDED
     self.paddle:render()
 
+    if self.paddle.hasKey then
+        love.graphics.draw(gTextures['main'], gFrames['power'][10], 20, 180, 0, 1, 1)
+    end
+
+    
+    -- using array and inplay
     for thisBall in pairs(self.ballSet) do
-        self.ballSet[thisBall]:render()
+        if self.ballSet[thisBall].inPlay then
+            self.ballSet[thisBall]:render()
+        end
     end
 
     --self.ballSet[thisBall]:render()
@@ -293,8 +386,16 @@ function PlayState:render()
     -- pause text, if paused
     if self.paused then
         love.graphics.setFont(gFonts['large'])
-        love.graphics.printf("PAUSED", 0, VIRTUAL_HEIGHT / 2 - 16, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf(self.bricks, 0, VIRTUAL_HEIGHT / 2 - 16, VIRTUAL_WIDTH, 'center')
     end
+
+    --ADDED - to see what the brickCount is for paddle change during testing
+    --love.graphics.print(self.paddle.brickCountChange, 25, 55)
+    love.graphics.print(self.levelScore, 25, 75)
+   -- love.graphics.print(self.totalBrickCount, 25, 105)
+
+
+
 end
 
 function PlayState:checkVictory()
