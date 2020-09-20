@@ -218,6 +218,7 @@ function LevelMaker.generate(width, height)
                                         gSounds['pickup']:play()
                                         player.keyColor = keyset
                                         player.hasKey = true
+                                        keyCollected = true
                                         player.score = player.score + 100
                                     end
                                 }
@@ -244,7 +245,7 @@ function LevelMaker.generate(width, height)
 
 --end of block draw
 
-            elseif not lockDrawn and (x > width - 150) then
+            elseif not lockDrawn and (x > width - 90) then
                 
                 lockDrawn = true
                 table.insert(objects,
@@ -256,38 +257,43 @@ function LevelMaker.generate(width, height)
                     y = (blockHeight - 1) * TILE_SIZE,
                     width = 16,
                     height = 16,
+
+                    -- make it a random variant
                     frame = keyset + 4,
                     collidable = true,
                     hit = false,
                     solid = true,
+                    lock = true,
 
                     -- collision function takes itself
-                    onCollide = function(obj, player)
-                            -- spawn a gem if we haven't already hit the block
-                            if not obj.hit then
+                    onCollide = function(obj)
+
+                        -- spawn a gem if we haven't already hit the block
+                        if keyCollected and not obj.hit then
+                        
+                            onConsume = function(player, obj)
+                                gSounds['pickup']:play()
+                            end
 
 
-                              onCollide = function(player, object)
-                                        gSounds['pickup']:play()
-                                        player.keyColor = keyset
-                                        player.hasKey = true
-                                        player.score = player.score + 100
-                                    end
-
-
-
-                                
+                            
+                            -- make the gem move up from the block and play a sound
+                            Timer.tween(0.1, {
+                                [obj] = {y = (blockHeight - 20) * TILE_SIZE}
+                            })
+                            gSounds['powerup-reveal']:play()
+                                                
                             obj.hit = true
 
-                            end
-                            
-                            
+                        end
 
                         gSounds['empty-block']:play()
                     end
                 }
+            )
+        
 
-                )
+
             end
         end
     end
