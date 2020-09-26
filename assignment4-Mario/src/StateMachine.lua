@@ -7,6 +7,7 @@ function StateMachine:init(states)
 		enter = function() end,
 		exit = function() end
 	}
+	
 	self.states = states or {} -- [name] -> [function that returns states]
 	self.current = self.empty
 end

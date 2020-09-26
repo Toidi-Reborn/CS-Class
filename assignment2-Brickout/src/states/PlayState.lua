@@ -36,6 +36,7 @@ function PlayState:enter(params)
     --self.paddle.hasKey = false
     self.keyPowerUp = PowerUp("key")
     self.ballsPowerUp = PowerUp("balls")
+    self.levelHasKeyBrick = false
 
     self.levelScore = 0
 
@@ -156,12 +157,12 @@ function PlayState:update(dt)
                     end
 
 
-                    if not self.ballsPowerUp.powerUsed and self.levelScore >= 500 then
+                    if not self.ballsPowerUp.powerUsed and self.levelScore >= 250 then
                         self.ballsPowerUp.inPlay = true
                         self.ballsPowerUp.powerUsed = true
                     end
 
-                    if not self.keyPowerUp.powerUsed and self.levelScore >= 1000 then
+                    if not self.paddle.hasKey and not self.keyPowerUp.powerUsed and self.levelScore >= 5000 and self.levelHasKeyBrick then
                         self.keyPowerUp.inPlay = true
                         self.keyPowerUp.powerUsed = true
                     end
@@ -188,7 +189,7 @@ function PlayState:update(dt)
                     -- go to our victory screen if there are no more bricks left
                     if self:checkVictory() then
                         gSounds['victory']:play()
-
+                        self.paddle.hasKey = false
                         gStateMachine:change('victory', {
                             level = self.level,
                             paddle = self.paddle,
@@ -297,6 +298,7 @@ function PlayState:update(dt)
         -- for rendering particle systems
         for k, brick in pairs(self.bricks) do
             brick:update(dt)
+        
         end
 
         if love.keyboard.wasPressed('escape') then
@@ -353,9 +355,14 @@ function PlayState:render()
         self.ballsPowerUp:render()
     end
 
-
+    self.levelHasKeyBrick = false
     -- render bricks
     for k, brick in pairs(self.bricks) do
+
+        if brick.isKeyBrick then
+            self.levelHasKeyBrick = true    
+        end
+
         brick:render()
     end
     -- render all particle systems

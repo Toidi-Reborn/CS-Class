@@ -118,8 +118,8 @@ function love.load()
     aiLevel = 1
 
     aiLevelTable = {
-        [1] = 0.65,  -- 65% speed
-        [2] = 0.75,
+        [1] = 0.45,  -- 65% speed
+        [2] = 0.65,
         [3] = 0.85
     }
 

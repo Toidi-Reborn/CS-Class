@@ -88,6 +88,10 @@ GEMS = {
 
 JUMP_BLOCKS = {}
 
+
+GAME_WON = false
+
+
 for i = 1, 30 do
     table.insert(JUMP_BLOCKS, i)
 end

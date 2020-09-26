@@ -16,6 +16,8 @@ function Player:init(def)
     self.hasKey = false
     self.unlocked = false
     self.keyColor = 0
+    self.isDone = false
+    self.wins = false
 end
 
 function Player:update(dt)
@@ -70,17 +72,25 @@ end
 
 function Player:checkObjectCollisions()
     local collidedObjects = {}
+    local flagOffSet = 0
 
     for k, object in pairs(self.level.objects) do
+
         if object:collides(self) then
             if object.solid then
                 table.insert(collidedObjects, object)
+
+              
             elseif object.consumable then
+                
                 object.onConsume(self)
                 table.remove(self.level.objects, k)
+        
             end
+
         end
     end
+
 
     return collidedObjects
 end

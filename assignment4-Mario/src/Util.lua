@@ -35,28 +35,6 @@ function GenerateQuads(atlas, tilewidth, tileheight)
 end
 
 
---ADDED - for flags
-function GenerateQuadsFlags(atlas)
-    local y = 0
-    local x = 96
-    local count = 1
-    local quads = {}
-    
-    
-    for i = 0, 3 do
-        quads[count] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
-        x = x + 16
-        count = count + 1
-    end
-
-
-    
-    return quads
-
-
-end
-
-
 --ADDED - for poles
 function GenerateQuadsPoles(atlas)
     local y = 0
@@ -67,6 +45,14 @@ function GenerateQuadsPoles(atlas)
     quads[count] = love.graphics.newQuad(x, y, 7, 47, atlas:getDimensions())
     x = x + 16
     count = count + 1
+
+    x = 96
+
+    for i = 0, 3 do
+        quads[count] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+        x = x + 16
+        count = count + 1
+    end
 
     return quads
 

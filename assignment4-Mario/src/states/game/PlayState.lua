@@ -7,10 +7,11 @@
 
 PlayState = Class{__includes = BaseState}
 
-function PlayState:init()
+function PlayState:init(params)
     self.camX = 0
     self.camY = 0
-    self.level = LevelMaker.generate(100, 10)
+    
+    self.level = LevelMaker.generate(20, 10)
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
@@ -30,11 +31,9 @@ function PlayState:init()
             ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
         },
         map = self.tileMap,
-        level = self.level
+        level = self.level,
     })
 
-  
-    
 
     --ADDED check if entire col is emopty, if so, move player right
     
@@ -54,15 +53,35 @@ function PlayState:init()
 
 
 
-
-
     self:spawnEnemies()
 
     self.player:changeState('falling')
+
 end
+
+
+
+function PlayState:enter(params)
+    self.playerLevel = params.playerLevel
+    self.player.score = params.score
+
+end
+
+
+
+
 
 function PlayState:update(dt)
     Timer.update(dt)
+
+    
+    if GAME_WON then
+        GAME_WON = false
+        gStateMachine:change('start', {
+            playerLevel = 1,
+            score = self.player.score,
+        })
+    end
 
     -- remove any nils from pickups, etc.
     self.level:clear()
@@ -93,18 +112,17 @@ function PlayState:render()
     
             
 
-    love.graphics.draw(gTextures['pole'], gFrames['flags'][3], 10, 50)
-
-    --love.graphics.draw(gTextures['pole'], gFrames['poles'][1], 20, 50)
-
-
         --ADDED - to show that the player has the key
     if self.player.hasKey then
         love.graphics.draw(gTextures['keys'], gFrames['keys'][self.player.keyColor], 10, 20)
     end
+    
+    if self.player.wins then
+        love.graphics.draw(gTextures['keys'], gFrames['keys'][5], 40, 20)
+    end
+    
 
-
-
+   
 
     -- translate the entire view of the scene to emulate a camera
     love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))

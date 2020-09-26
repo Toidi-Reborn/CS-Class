@@ -90,8 +90,7 @@ gFrames = {
     ['green-alien'] = GenerateQuads(gTextures['green-alien'], 16, 20),
     ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16),
     ['keys'] = GenerateQuads(gTextures['keys'], 16, 16),
-    ['flags'] = GenerateQuadsFlags(gTextures['pole']),
-    ['poles'] = GenerateQuadsPoles(gTextures['pole']),
+    ['pole'] = GenerateQuadsPoles(gTextures['pole']),
 }
 
 -- these need to be added after gFrames is initialized because they refer to gFrames from within

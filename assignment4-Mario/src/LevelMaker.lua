@@ -28,7 +28,11 @@ function LevelMaker.generate(width, height)
     local keyCollected = false
     local lockDrawn = false
     local keyInBox = false
+    local flagDrawn = false
+    playerWins = false
 
+    local flagY = 0
+    local flagX = 0
 
 
     -- insert blank tables into tiles for later access
@@ -47,7 +51,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- chance to just be emptiness
-        if math.random(7) == 1 then -------------------------------------------- was 7
+        if math.random(7) == 1 and x < (width - 10) then -------------------------flat land for finish
             
             for y = 7, height do
                 table.insert(tiles[y],
@@ -65,7 +69,7 @@ function LevelMaker.generate(width, height)
             end
 
             -- chance to generate a pillar
-            if math.random(8) == 1 then
+            if math.random(8) == 1 and x < (width - 10) then
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
@@ -107,7 +111,7 @@ function LevelMaker.generate(width, height)
 
          
             -- chance to spawn a block
-            if math.random(10) == 1 then
+            if math.random(10) == 1 and x < (width - 10) then  --No boxes at finish area
 
                 
                 table.insert(objects,
@@ -133,7 +137,7 @@ function LevelMaker.generate(width, height)
                             if not obj.hit then
 
                                 --CHANGED
-                                if math.random(5) == 1 then
+                                if math.random(3) == 1 then
                                 
                                     -- maintain reference so we can set it to nil
                                     local gem = GameObject {
@@ -174,9 +178,10 @@ function LevelMaker.generate(width, height)
 
 
 
-            --ADDED - chance to spawn key block
+            
+                --ADDED - chance to spawn key block
                
-            elseif not keyDrawn and math.random(25) == 1 then
+            elseif not keyDrawn and (math.random(25) == 1 or x > width-25) then
                 keyDrawn = true
 
                 table.insert(objects,
@@ -202,7 +207,7 @@ function LevelMaker.generate(width, height)
                             if not obj.hit then
 
                                 -- maintain reference so we can set it to nil
-                                local gem = GameObject {
+                                local key = GameObject {
                                     texture = 'keys',
                                     x = (x - 1) * TILE_SIZE,
                                     y = (blockHeight - 1) * TILE_SIZE - 4,
@@ -225,11 +230,11 @@ function LevelMaker.generate(width, height)
 
                                 -- make the key move up from the block and play a sound
                                 Timer.tween(0.1, {
-                                    [gem] = {y = (blockHeight - 2) * TILE_SIZE}
+                                    [key] = {y = (blockHeight - 2) * TILE_SIZE}
                                 })
                                 gSounds['powerup-reveal']:play()
 
-                                table.insert(objects, gem)
+                                table.insert(objects, key)
 
                             end
                             
@@ -243,9 +248,15 @@ function LevelMaker.generate(width, height)
             
 
 
---end of block draw
 
-            elseif not lockDrawn and (x > width - 90) then
+                --end of block draw
+
+            
+            
+            
+            --elseif not lockDrawn and (x > width - 10) then
+
+            elseif not lockDrawn and (x > width - 9) then
                 
                 lockDrawn = true
                 table.insert(objects,
@@ -270,12 +281,141 @@ function LevelMaker.generate(width, height)
 
                         -- spawn a gem if we haven't already hit the block
                         if keyCollected and not obj.hit then
+                                                                            
+                            Timer.tween(0.5, {
+                              [obj] = {y = (blockHeight - 20) * TILE_SIZE}
+                            })
+                            gSounds['powerup-reveal']:play()
+                                            
+                            
+
+                            obj.hit = true
+
+
+                            --pole
+                            table.insert(objects,
+
+                            GameObject {
+                                texture = 'pole',  
+                                x = ((width - 5) * TILE_SIZE),
+                                y = (3 * TILE_SIZE) + 1,
+                                width = 16,
+                                height = 16,
+                                frame = 1,
+                                collidable = false,
+                                consumable = true,
+                                hit = false,
+                                solid = false,
+                                pole = true,
+
+
+                                onConsume = function(obj) --collide with pole
+                                    
+                                    if not obj.hit then
+                                    
+
+                                        table.insert(objects,
+                                    
+                                            GameObject {
+                                                texture = 'pole',  
+                                                x = ((width - 5) * TILE_SIZE),
+                                                y = (3 * TILE_SIZE) + 1,
+                                                width = 16,
+                                                height = 16,
+                                                frame = 1,
+                                                collidable = false,
+                                                consumable = false,
+                                                hit = false,
+                                                solid = false,
+                                            }
+                                        )
+                                
+                                        
+
+                                        local flag = GameObject {
+                                            texture = 'pole',  
+                                            x = ((width - 5) * TILE_SIZE) + 7,  -- plus 7 for pole offset   was -4
+                                            y = (5 * TILE_SIZE) + 1,
+                                            width = 16,
+                                            height = 16,
+                                            frame = 4,
+                                            collidable = false,
+                                            consumable = false,
+                                            hit = false,
+                                            solid = false,
+                                            isFlag = true,
+                                                
+                                                
+                                            }
+
+                                            Timer.tween(1.5, {
+                                                [flag] = {y =  (blockHeight - 1) * TILE_SIZE}
+                                            })
+
+
+                                            table.insert(objects, flag)
+
+                                            
+                                           
+
+                                        obj.hit = true   
+                                    end
+
+
+
+
+                                end
+                            }
+                            
+                            )    
+
+
+
+                        end
+
+                        gSounds['empty-block']:play()
+                    end
+                   
+                }
+            )
+
+
+
+            end
+
+
+
+
+--[[
+            --ADDED Final Flag
+            if x == width - 90 then
+                    
+                table.insert(objects,
+
+                -- jump block
+                GameObject {
+                    texture = 'pole',
+                    x = (x - 1) * TILE_SIZE,
+                    y = ((blockHeight - 1) * TILE_SIZE) + 1,
+                    width = 7,
+                    height = 47,
+
+                    -- make it a random variant
+                    frame = 1,
+                    collidable = true,
+                    hit = false,
+                    solid = true,
+                    active = false,
+
+                    -- collision function takes itself
+                    onCollide = function(obj)
+
+                        -- spawn a gem if we haven't already hit the block
+                        if keyCollected and not obj.hit then
                         
                             onConsume = function(player, obj)
                                 gSounds['pickup']:play()
                             end
-
-
                             
                             -- make the gem move up from the block and play a sound
                             Timer.tween(0.1, {
@@ -291,10 +431,11 @@ function LevelMaker.generate(width, height)
                     end
                 }
             )
-        
-
 
             end
+]]
+            
+
         end
     end
 

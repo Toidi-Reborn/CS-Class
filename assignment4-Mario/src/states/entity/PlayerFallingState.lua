@@ -45,7 +45,9 @@ function PlayerFallingState:update(dt)
     -- go back to start if we fall below the map boundary
     elseif self.player.y > VIRTUAL_HEIGHT then
         gSounds['death']:play()
-        gStateMachine:change('start')
+        gStateMachine:change('start', {
+            score = self.player.score
+        })
     
     -- check side collisions and reset position
     elseif love.keyboard.isDown('left') then
