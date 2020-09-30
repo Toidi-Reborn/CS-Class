@@ -46,7 +46,8 @@ function PlayerFallingState:update(dt)
     elseif self.player.y > VIRTUAL_HEIGHT then
         gSounds['death']:play()
         gStateMachine:change('start', {
-            score = self.player.score
+            score = 0,
+            level = 1
         })
     
     -- check side collisions and reset position

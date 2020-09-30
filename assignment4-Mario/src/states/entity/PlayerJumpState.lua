@@ -75,7 +75,11 @@ function PlayerJumpState:update(dt)
     for k, entity in pairs(self.player.level.entities) do
         if entity:collides(self.player) then
             gSounds['death']:play()
-            gStateMachine:change('start')
+            gStateMachine:change('start', {
+                score = 0,
+                level = 1
+
+            })
         end
     end
 end

@@ -7,11 +7,19 @@
 
 PlayState = Class{__includes = BaseState}
 
-function PlayState:init(params)
+function PlayState:init()
     self.camX = 0
     self.camY = 0
-    
-    self.level = LevelMaker.generate(20, 10)
+
+
+end
+
+
+
+function PlayState:enter(params)
+    self.curLevel = params.level
+
+    self.level = LevelMaker.generate(self.curLevel * 10, 10)
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
@@ -51,6 +59,7 @@ function PlayState:init(params)
         end
     end
 
+    self.player.score = params.score
 
 
     self:spawnEnemies()
@@ -61,24 +70,16 @@ end
 
 
 
-function PlayState:enter(params)
-    self.playerLevel = params.playerLevel
-    self.player.score = params.score
-
-end
-
-
-
 
 
 function PlayState:update(dt)
     Timer.update(dt)
 
-    
+     
     if GAME_WON then
         GAME_WON = false
         gStateMachine:change('start', {
-            playerLevel = 1,
+            level = self.curLevel + 1,
             score = self.player.score,
         })
     end
@@ -106,21 +107,11 @@ function PlayState:render()
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX), 0)
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX),
         gTextures['backgrounds']:getHeight() / 3 * 2, 0, 1, -1)
-    love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256), 0)
+    love.graphics.draw(gTextures['backgrounds'], gFramesg['backgrounds'][self.background], math.floor(-self.backgroundX + 256), 0)
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256),
         gTextures['backgrounds']:getHeight() / 3 * 2, 0, 1, -1)
     
             
-
-        --ADDED - to show that the player has the key
-    if self.player.hasKey then
-        love.graphics.draw(gTextures['keys'], gFrames['keys'][self.player.keyColor], 10, 20)
-    end
-    
-    if self.player.wins then
-        love.graphics.draw(gTextures['keys'], gFrames['keys'][5], 40, 20)
-    end
-    
 
    
 
@@ -138,6 +129,17 @@ function PlayState:render()
     love.graphics.print(tostring(self.player.score), 5, 5)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print(tostring(self.player.score), 4, 4)
+
+
+
+    
+    --ADDED - to show that the player has the key
+    if self.player.hasKey then
+        love.graphics.draw(gTextures['keys'], gFrames['keys'][self.player.keyColor], 10, 20)
+    end
+
+  
+    --love.graphics.print(tostring(self.curLevel), 30, 30)
 end
 
 function PlayState:updateCamera()

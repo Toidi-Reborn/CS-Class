@@ -103,7 +103,7 @@ function LevelMaker.generate(width, height)
                         width = 16,
                         height = 16,
                         frame = BUSH_IDS[math.random(#BUSH_IDS)] + (math.random(4) - 1) * 7,
-                        collidable = false
+                        collidable = true,
                     }
                 )
             
@@ -300,13 +300,12 @@ function LevelMaker.generate(width, height)
                                 x = ((width - 5) * TILE_SIZE),
                                 y = (3 * TILE_SIZE) + 1,
                                 width = 16,
-                                height = 16,
+                                height = 16 * 3,
                                 frame = 1,
-                                collidable = false,
+                                collidable = true,
                                 consumable = true,
                                 hit = false,
                                 solid = false,
-                                pole = true,
 
 
                                 onConsume = function(obj) --collide with pole
@@ -327,7 +326,9 @@ function LevelMaker.generate(width, height)
                                                 consumable = false,
                                                 hit = false,
                                                 solid = false,
+                                            
                                             }
+
                                         )
                                 
                                         

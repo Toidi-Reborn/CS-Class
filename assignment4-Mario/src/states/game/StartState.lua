@@ -11,13 +11,14 @@
 StartState = Class{__includes = BaseState}
 
 function StartState:init()
-    self.map = LevelMaker.generate(100, 10)
+    self.map = LevelMaker.generate(50, 10)
     self.background = math.random(3)
     
 end
 
 function StartState:enter(params)
     self.score = params.score
+    self.level = params.level
 
 end
 
@@ -25,6 +26,7 @@ function StartState:update(dt)
     if love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
         gStateMachine:change('play', {
            score = self.score,
+           level = self.level
 
         })
     end

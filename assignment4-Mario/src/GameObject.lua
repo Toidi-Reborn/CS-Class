@@ -25,28 +25,34 @@ function GameObject:init(def)
     self.hidden = def.hidden
     self.isFlag = def.isFlag
     flagTrigger = 8
+    resetTrigger = 0
 end
 
 function GameObject:collides(target)
     return not (target.x > self.x + self.width or self.x > target.x + target.width or
             target.y > self.y + self.height or self.y > target.y + target.height)
+    
 end
 
 
 --ADDED for flag
 function GameObject:update(dt)
     if self.isFlag and self.y <= 3 * TILE_SIZE then
-        if flagTrigger == 48 then --8
+        if flagTrigger == 8 then --8
             self.frame = 2
-        elseif flagTrigger == 76 then  --16
+        elseif flagTrigger == 16 then  --16
             self.frame = 3
         end
         flagTrigger = flagTrigger + 1 --17
-        if flagTrigger >= 100 then
+        resetTrigger = resetTrigger + 1
+        
+        if flagTrigger >= 17 then
             flagTrigger = 0
-            GAME_WON = true
         end
 
+        if resetTrigger == 150 then
+            GAME_WON = true
+        end
     end
 
 end

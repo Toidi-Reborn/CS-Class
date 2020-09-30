@@ -72,7 +72,6 @@ end
 
 function Player:checkObjectCollisions()
     local collidedObjects = {}
-    local flagOffSet = 0
 
     for k, object in pairs(self.level.objects) do
 
@@ -80,7 +79,7 @@ function Player:checkObjectCollisions()
             if object.solid then
                 table.insert(collidedObjects, object)
 
-              
+                       
             elseif object.consumable then
                 
                 object.onConsume(self)
@@ -90,7 +89,8 @@ function Player:checkObjectCollisions()
 
         end
     end
-
-
-    return collidedObjects
+    
+    if #collidedObjects > 0 then
+        self.x = self.x - PLAYER_WALK_SPEED * dt
+    end
 end
