@@ -22,6 +22,7 @@ function Alien:init(world, type, x, y, userData)
     if self.type == 'square' then
         self.shape = love.physics.newRectangleShape(35, 35)
         self.sprite = math.random(5)
+
     else
         self.shape = love.physics.newCircleShape(17.5)
         self.sprite = 9

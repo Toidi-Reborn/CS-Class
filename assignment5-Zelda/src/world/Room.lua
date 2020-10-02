@@ -132,14 +132,6 @@ function Room:generateObjects()
 
     end
 
-
-     --   Timer.tween(2.5, {
-       --     [throwPot] = {y = ( - 5)}
-       -- })
-
-
-
-
 end
 
 --[[
@@ -306,13 +298,7 @@ function Room:update(dt)
                 end
             end
 
-            --[[Timer.tween(.5, {
-            [pot] = {x = ( (self.player.x - (TILE_SIZE * 4) ))}
-            })]]
         end
-
-
-
 
         if pot.state == "crash" then
             pot.timeOut = pot.timeOut + 1
@@ -324,7 +310,6 @@ function Room:update(dt)
             end
     
         end
-
 
     end
 
@@ -349,10 +334,8 @@ function Room:update(dt)
                         [heart] = {y = (-50)}
                     })
                     
-                end
-                
+                end                
                 table.insert(self.objects, heart)
-
 
             end
             entity.dead = true
@@ -375,6 +358,7 @@ function Room:update(dt)
         end
     end
 
+    
     for k, object in pairs(self.objects) do
         object:update(dt)
 

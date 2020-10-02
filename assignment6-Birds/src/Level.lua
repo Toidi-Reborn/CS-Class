@@ -26,7 +26,8 @@ function Level:init()
 
         -- if we collided between both an alien and an obstacle...
         if types['Obstacle'] and types['Player'] then
-
+            --ADDED to set split flag to false if player hits obstacle
+            self.launchMarker.alien.canSplit = false
             -- destroy the obstacle if player's combined velocity is high enough
             if a:getUserData() == 'Obstacle' then
                 local velX, velY = b:getBody():getLinearVelocity()
@@ -47,7 +48,7 @@ function Level:init()
 
         -- if we collided between an obstacle and an alien, as by debris falling...
         if types['Obstacle'] and types['Alien'] then
-
+    
             -- destroy the alien if falling debris is falling fast enough
             if a:getUserData() == 'Obstacle' then
                 local velX, velY = a:getBody():getLinearVelocity()
@@ -68,6 +69,9 @@ function Level:init()
 
         -- if we collided between the player and the alien...
         if types['Player'] and types['Alien'] then
+            --ADDED to set split flag to false if player hits alien
+            self.launchMarker.alien.canSplit = false
+            
 
             -- destroy the alien if player is traveling fast enough
             if a:getUserData() == 'Player' then
@@ -87,6 +91,10 @@ function Level:init()
             end
         end
 
+        
+
+        
+        
         -- if we hit the ground, play a bounce sound
         if types['Player'] and types['Ground'] then
             gSounds['bounce']:stop()
@@ -145,6 +153,13 @@ function Level:init()
 end
 
 function Level:update(dt)
+
+    --ADDED for quick restart during testing
+    if love.keyboard.wasPressed("r") then
+        gStateMachine:change('play')
+    end
+
+
     -- update launch marker, which shows trajectory
     self.launchMarker:update(dt)
 
@@ -188,7 +203,27 @@ function Level:update(dt)
         local xVel, yVel = self.launchMarker.alien.body:getLinearVelocity()
         
         -- if we fired our alien to the left or it's almost done rolling, respawn
-        if xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5) then
+        if self.launchMarker.alien.didSplit then
+
+            local xPos2, yPos2 = self.launchMarker.alien2.body:getPosition()
+            local xPos3, yPos3 = self.launchMarker.alien3.body:getPosition()
+            local xVel2, yVel2 = self.launchMarker.alien2.body:getLinearVelocity()
+            local xVel3, yVel3 = self.launchMarker.alien3.body:getLinearVelocity()
+
+            
+            if (xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5)) and (xPos2 < 0 or (math.abs(xVel2) + math.abs(yVel2) < 1.5)) and (xPos3 < 0 or (math.abs(xVel3) + math.abs(yVel3) < 1.5)) then
+                   
+                self.launchMarker.alien.body:destroy()
+                self.launchMarker = AlienLaunchMarker(self.world)
+
+                -- re-initialize level if we have no more aliens
+                if #self.aliens == 0 then
+                    gStateMachine:change('start')
+                end
+            end
+
+        
+        elseif (xPos < 0 or (math.abs(xVel) + math.abs(yVel) < 1.5)) then
             self.launchMarker.alien.body:destroy()
             self.launchMarker = AlienLaunchMarker(self.world)
 
@@ -197,6 +232,9 @@ function Level:update(dt)
                 gStateMachine:change('start')
             end
         end
+
+
+
     end
 end
 

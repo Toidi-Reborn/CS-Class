@@ -50,6 +50,7 @@ function AlienLaunchMarker:update(dt)
 
             -- spawn new alien in the world, passing in user data of player
             self.alien = Alien(self.world, 'round', self.shiftedX, self.shiftedY, 'Player')
+            self.alien.canSplit = true
 
             -- apply the difference between current X,Y and base X,Y as launch vector impulse
             self.alien.body:setLinearVelocity((self.baseX - self.shiftedX) * 10, (self.baseY - self.shiftedY) * 10)
@@ -61,13 +62,44 @@ function AlienLaunchMarker:update(dt)
             -- we're no longer aiming
             self.aiming = false
 
+
+
         -- re-render trajectory
         elseif self.aiming then
             self.rotation = self.baseY - self.shiftedY * 0.9
             self.shiftedX = math.min(self.baseX + 30, math.max(x, self.baseX - 30))
             self.shiftedY = math.min(self.baseY + 30, math.max(y, self.baseY - 30))
         end
+
+
+    else
+
+        if love.keyboard.wasPressed('space') and self.alien.canSplit then
+            self.alien.canSplit = false
+            self.alien.didSplit = true
+
+
+            self.alien2 = Alien(self.world, 'round', self.alien.body:getX(), self.alien.body:getY(), 'Player')
+            self.alien3 = Alien(self.world, 'round', self.alien.body:getX(), self.alien.body:getY(), 'Player')
+
+
+            local xVel, yVel = self.alien.body:getLinearVelocity()
+            --local xPos, yPos = self.alien.body:getPosition()
+
+
+            self.alien2.body:setLinearVelocity((xVel) + 0, (yVel) + 50)
+            self.alien3.body:setLinearVelocity((xVel) + 0, (yVel) - 50)
+            
+
+            -- make the alien pretty bouncy
+            self.alien2.fixture:setRestitution(0.4)
+            self.alien3.fixture:setRestitution(0.4)
+            self.alien2.body:setAngularDamping(1)
+            self.alien3.body:setAngularDamping(1)
+
+        end
     end
+
 end
 
 function AlienLaunchMarker:render()
@@ -107,5 +139,9 @@ function AlienLaunchMarker:render()
         love.graphics.setColor(255, 255, 255, 255)
     else
         self.alien:render()
+        if self.alien.didSplit then
+            self.alien2:render()
+            self.alien3:render()
+        end
     end
 end
