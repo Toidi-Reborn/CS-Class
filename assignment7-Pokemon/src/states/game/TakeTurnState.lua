@@ -203,7 +203,7 @@ function TakeTurnState:victory()
                     -- pop exp message off
                     gStateStack:pop()
 
-                    self.playerPokemon.currentExp = self.playerPokemon.currentExp + exp
+                    self.playerPokemon.currentExp = self.playerPokemon.currentExp + exp + 100
 
                     -- level up if we've gone over the needed amount
                     if self.playerPokemon.currentExp > self.playerPokemon.expToLevel then
@@ -212,12 +212,33 @@ function TakeTurnState:victory()
 
                         -- set our exp to whatever the overlap is
                         self.playerPokemon.currentExp = self.playerPokemon.currentExp - self.playerPokemon.expToLevel
+
+                        --ADDED to get current stats before they are updated
+                        local curHP = self.playerPokemon.HP
+                        local curA = self.playerPokemon.attack
+                        local curD = self.playerPokemon.defense
+                        local curS = self.playerPokemon.speed
+
                         self.playerPokemon:levelUp()
 
                         gStateStack:push(BattleMessageState('Congratulations! Level Up!',
+                            function() end, false))
+                        --gStateStack:push(LevelUpState('LEVEL UP!!!!!!!\nHP: ' .. tostring(curHP) .. ' >>> ' .. tostring(self.playerPokemon.HP) ..  '   Speed: ' ..tostring(curS).. '  >>>   ' ..tostring(self.playerPokemon.speed).. '\nAttack: ' ..tostring(curA).. ' >>> ' ..tostring(self.playerPokemon.attack)..  '   Defense: ' ..tostring(curD).. ' >>> ' ..tostring(self.playerPokemon.defense).. '',
+                        
+                        --gStateStack:pop()
+
+                        gStateStack:push(LevelUpState(self.playerPokemon,
+
+
+
                         function()
                             self:fadeOutWhite()
                         end))
+
+
+
+
+
                     else
                         self:fadeOutWhite()
                     end

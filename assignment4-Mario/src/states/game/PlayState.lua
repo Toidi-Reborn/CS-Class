@@ -107,13 +107,12 @@ function PlayState:render()
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX), 0)
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX),
         gTextures['backgrounds']:getHeight() / 3 * 2, 0, 1, -1)
-    love.graphics.draw(gTextures['backgrounds'], gFramesg['backgrounds'][self.background], math.floor(-self.backgroundX + 256), 0)
+    love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256), 0)
     love.graphics.draw(gTextures['backgrounds'], gFrames['backgrounds'][self.background], math.floor(-self.backgroundX + 256),
         gTextures['backgrounds']:getHeight() / 3 * 2, 0, 1, -1)
     
             
 
-   
 
     -- translate the entire view of the scene to emulate a camera
     love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))

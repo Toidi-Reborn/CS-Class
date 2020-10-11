@@ -89,8 +89,6 @@ function Player:checkObjectCollisions()
 
         end
     end
-    
-    if #collidedObjects > 0 then
-        self.x = self.x - PLAYER_WALK_SPEED * dt
-    end
+
+    return collidedObjects
 end

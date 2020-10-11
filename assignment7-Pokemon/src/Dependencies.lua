@@ -46,6 +46,7 @@ require 'src/states/game/FadeOutState'
 require 'src/states/game/PlayState'
 require 'src/states/game/StartState'
 require 'src/states/game/TakeTurnState'
+require 'src/states/game/LevelUpState'
 
 require 'src/world/Level'
 require 'src/world/tile_ids'
@@ -75,6 +76,7 @@ gFrames = {
 }
 
 gFonts = {
+    ['smaller'] = love.graphics.newFont('fonts/font.ttf', 2),
     ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
     ['medium'] = love.graphics.newFont('fonts/font.ttf', 16),
     ['large'] = love.graphics.newFont('fonts/font.ttf', 32)

@@ -14,6 +14,7 @@
 Selection = Class{}
 
 function Selection:init(def)
+    self.arrow = def.arrow
     self.items = def.items
     self.x = def.x
     self.y = def.y
@@ -60,10 +61,13 @@ function Selection:render()
     for i = 1, #self.items do
         local paddedY = currentY + (self.gapHeight / 2) - self.font:getHeight() / 2
 
-        -- draw selection marker if we're at the right index
-        if i == self.currentSelection then
+        -- draw selection marker if we're at the right inde
+        --ADDED not self.arrow to turn off for assignment
+        if i == self.currentSelection and not self.arrow then
             love.graphics.draw(gTextures['cursor'], self.x - 8, paddedY)
         end
+
+
 
         love.graphics.printf(self.items[i].text, self.x, paddedY, self.width, 'center')
 

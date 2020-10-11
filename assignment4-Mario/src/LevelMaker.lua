@@ -69,7 +69,7 @@ function LevelMaker.generate(width, height)
             end
 
             -- chance to generate a pillar
-            if math.random(8) == 1 and x < (width - 10) then
+            if math.random(20) == 1 and x < (width - 10) then
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
@@ -154,6 +154,7 @@ function LevelMaker.generate(width, height)
                                         -- gem has its own function to add to the player's score
                                         onConsume = function(player, object)
                                             gSounds['pickup']:play()
+                                            player.score = player.score + 100
                                         end
                                     }
                                     
